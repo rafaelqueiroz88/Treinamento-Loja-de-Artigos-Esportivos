@@ -55,6 +55,7 @@
 				<div class="row">
 					<div class="col-sm-12 col-md-offset-4 col-md-4">						
 						<form method="post" action="./?pagina=Admin">
+							<!--
 							<select class="form-control" name="limite">
 								<option disabled selected>Mostrando</option>
 								<option value="2">2</option>
@@ -64,13 +65,14 @@
 							</select>
 							<button id="mostrar-mais" class="btn btn-default">
 								Alterar
-							</button>						
+							</button>
+							-->
 					</div>
 				</div>
 				<?php
-					$location = isset($_GET["location"]) ? $_GET["location"] : 0;
+					$from = isset($_GET["from"]) ? $_GET["from"] : 0;
 					$limite = isset($_POST["limite"]) ? $_POST["limite"] : 4;
-					$produtos->ListarTudo($location, $limite);
+					$produtos->ListarTudo($from, $limite);
 				?>
 				</form>
 			</div>

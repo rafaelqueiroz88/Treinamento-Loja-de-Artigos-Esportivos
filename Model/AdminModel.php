@@ -50,7 +50,7 @@
                     $destino = './Files/Catalogo_Produtos/'.$novoNome;
                     if (@move_uploaded_file ( $arquivo_tmp, $destino)) 
                     {
-                        $query = "INSERT INTO ".$this->tbl_produtos." (prd_nome, prd_categoria, prd_marca, prd_preco, prd_custo, prd_foto, prd_data_entrada) VALUES (:nome, :categoria, :marca, :preco, :custo, :foto, now())";
+                        $query = "INSERT INTO ".$this->tbl_produtos." (prd_nome, prd_categoria, prd_marca, prd_preco, prd_custo, prd_foto, prd_data_entrada, prd_status) VALUES (:nome, :categoria, :marca, :preco, :custo, :foto, now(), 0)";
                         $stmt = $this->conn->prepare($query);
                         $this->nome=htmlspecialchars(strip_tags($this->nome));
                         $this->categoria=htmlspecialchars(strip_tags($this->categoria));
@@ -137,9 +137,14 @@
             $this->custo = $row["prd_custo"];
             $this->foto = $row["prd_foto"];
         }
-		public function ListarTudo($location, $limite)
+		public function ListarTudo($from, $limite)
 		{
-			$query = "SELECT * FROM ".$this->tbl_produtos." INNER JOIN ".$this->tbl_marcas." WHERE ".$this->tbl_produtos.".prd_marca = ".$this->tbl_marcas.".mar_id ORDER BY prd_status ASC Limit $location, $limite";
+			$query = "SELECT * FROM ".$this->tbl_produtos." INNER JOIN ".$this->tbl_marcas." WHERE ".$this->tbl_produtos.".prd_marca = ".$this->tbl_marcas.".mar_id";
+			$stmt = $this->conn->prepare($query);
+			$stmt->execute();
+			$num = $stmt->rowCount();
+			$total = $num;
+			$query = "SELECT * FROM ".$this->tbl_produtos." INNER JOIN ".$this->tbl_marcas." WHERE ".$this->tbl_produtos.".prd_marca = ".$this->tbl_marcas.".mar_id LIMIT $from, $limite";
 			$stmt = $this->conn->prepare($query);
 			$stmt->execute();
 			$num = $stmt->rowCount();
@@ -150,6 +155,7 @@
 			if($num>0)
 			{
 				echo "<tr>";
+				echo "<th>ID</th>";
 				echo "<th>Produto</th>";
 				echo "<th>Marca</th>";
 				echo "<th>Status</th>";
@@ -161,6 +167,9 @@
 				{
 					extract($row);
 					echo "<tr>";
+					echo "<td style='vertical-align: middle;'>";
+					echo $row["prd_id"];
+					echo "</td>";
 					echo "<td style='vertical-align: middle;'>";
 					echo $row["prd_nome"];
 					echo "</td>";
@@ -197,24 +206,55 @@
 			echo "<center>";
 			echo "<nav aria-label='Page navigation'>";
 			echo "<ul class='pagination'>";
+			/*
 			echo "<li>";
-			echo "<a href='#'' aria-label='Previous'>";
+			echo "<a href='?pagina=Admin&from=0' aria-label='Previous'>";
 			echo "<span aria-hidden='true'>&laquo;</span>";
 			echo "</a>";
 			echo "</li>";
+			*/
+			$limitar = ceil($total/$limite);
 			
-			//Desenvolva uma lógica TOP aqui
-			$total = $num / $limite;
-			if($total > 0)
-			{
-				echo "<li><a href='#'>a</a></li>";
-			}
 
-			echo "<li>";
+			if(!isset($_GET["from"]) || $_GET["from"] == 0 || $_GET["from"] == 1)
+			{
+
+				
+				//O seguinte código consegue fazer paginação e anular o link ativo, porém só funciona quando o $from é igual a 0
+				//encontrar uma lógica que funcione para o caso do $from estar em outra casa
+				for($i = 1; $i <= $limitar; $i++)
+				{
+					$j = ($i * $limite) - $limite;
+					echo "<li><a href='?pagina=Admin&from=$j'>$i</a></li>";
+					/*
+					if($i == 1)
+					{
+						echo "<li><a href='#' disabled>$i</a></li>";
+					}
+					else
+					{
+						$j = ($i * $limite) - $limite;
+						echo "<li><a href='?pagina=Admin&from=$j'>$i</a></li>";
+					}
+					*/
+				}
+			}
+			else
+			{
+				for($i = 1; $i <= $limitar; $i++)
+				{
+					$j = ($i * $limite - $limite);
+					echo "<li><a href='?pagina=Admin&from=$j'>$i</a></li>";
+				}
+			}
+			
+			
+
+			/*echo "<li>";
 			echo "<a href='#'' aria-label='Next'>";
 			echo "<span aria-hidden='true'>&raquo;</span>";
 			echo "</a>";
-			echo "</li>";
+			echo "</li>";*/
 			echo "</ul>";
 			echo "</nav>";
 			echo "</center>";
@@ -434,6 +474,7 @@
 		public $marca;
 		public $preco;
 		public $custo;
+		public $status;
 		public $foto;
 		public $tmp_name;
 
@@ -456,6 +497,44 @@
             else
             {
             	return false;
+            }
+        }
+        public function AtualizarMarca()
+        {
+        	$query = "UPDATE ".$this->tbl_marcas." SET mar_nome = ?, mar_status = 0 WHERE mar_id = ?";
+            $stmt = $this->conn->prepare($query);
+            $this->nome=htmlspecialchars(strip_tags($this->nome));
+            $this->marcaId=htmlspecialchars(strip_tags($this->marcaId));
+            //bind values
+            $stmt->bindParam(1, $this->nome);
+            $stmt->bindParam(2, $this->marcaId);
+            if($stmt->execute())
+            {
+            	return true;
+            }
+            else
+            {
+            	return false;
+            }
+        }
+        public function AbrirMarca()
+        {
+        	$query = "SELECT * FROM ".$this->tbl_marcas." WHERE mar_id = ?";
+        	$stmt = $this->conn->prepare($query);
+        	$this->marcaId=htmlspecialchars(strip_tags($this->marcaId));
+            $stmt->bindParam(1, $this->marcaId);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $this->produtoId = $row["mar_id"];
+            $this->nome = $row["mar_nome"];
+            switch($row["mar_status"])
+            {
+            	case "0" :
+            		$this->status = "Marca Ativada";
+            		break;
+        		case "1" :
+        			$this->status = "Marca Desativada";
+        			break;
             }
         }
         public function ListarTodas()
@@ -492,7 +571,7 @@
 					}
 					echo "</td>";
 					echo "<td>";
-					echo "<a href='./?pagina=Admin&admin=Atualizar-Produto&produto=".$row["mar_id"]."' class='btn btn-primary'> <span class='glyphicon glyphicon-pencil'></span> Atualizar</a> ";
+					echo "<a href='./?pagina=Admin&admin=Atualizar-Marca&marca=".$row["mar_id"]."' class='btn btn-primary'> <span class='glyphicon glyphicon-pencil'></span> Atualizar</a> ";
 					echo "<a href='#' id='funcao' action='apagar-marca' data-name='".$row["mar_nome"]."' delete-id='".$row["mar_id"]."' class='btn btn-danger' > <span class='glyphicon glyphicon-trash'></span> Apagar</a>";
 					echo "</td>";
 				}
@@ -522,6 +601,14 @@
 		public function AvisoErroCadastro()
 		{
 			echo "<div class='alert alert-danger' role='alert'><center>Falha ao cadastrar a Marca desejada! <br/> <strong><a href='./?pagina=Admin&admin=Index'>Retornar a página principal </a></strong></center></div>";
+		}
+		public function AvisoSucessoAtualizar()
+		{
+			echo "<div class='alert alert-success' role='alert'><center>Marca Cadastrada com Sucesso! <br/> <strong><a href='./?pagina=Admin&admin=Index'>Retornar a página principal </a></strong></center></div>";
+		}
+		public function AvisoErroAtualizar()
+		{
+			echo "<div class='alert alert-danger' role='alert'><center>Falha ao atualizar a Marca desejada! <br/> <strong><a href='./?pagina=Admin&admin=Index'>Retornar a página principal </a></strong></center></div>";
 		}
 	}
 		
