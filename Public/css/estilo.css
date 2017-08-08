@@ -16,5 +16,24 @@ h3{
 	text-transform: uppercase;
 }
 footer{
+	height: auto;
+	padding-top: 15px;
+	padding-bottom: 20px;
+	background-color: #333;
+	color: #fff;
 	text-transform: uppercase;
 }
+/* Customizando botão de envio de imagem */
+input[type="file"]::-webkit-file-upload-button{
+	width: auto;
+	height: 30px;
+	border-radius: 4px;
+	border: 0px;
+	box-shadow: 1.5px 1.5px 1.5px rgba(0, 0, 0, .4);
+	color: #fff;
+	background-color: rgba(50, 110, 180, 10);
+}
+.caixa-imagem{
+	width: 100%;
+}
+/* Fim da customização de botão de imagem */
