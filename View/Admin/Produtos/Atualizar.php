@@ -12,6 +12,7 @@
 		$produto->marca = $_POST["marca"];
 		$produto->preco = $_POST["preco"];
 		$produto->custo = $_POST["custo"];
+		$produto->estoque = $_POST["quantidade"];
 		$produto->produtoId = $_POST["id"];
 		if($produto->AtualizarProduto())
 		{
@@ -113,6 +114,16 @@
 										<input type="number" name="custo" class="form-control" id="custo" value="<?php echo $produto->custo; ?>" placeholder="50" required/>
 										<div class="input-group-addon">,00</div>
 									</div>									
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">					
+						<div class="col-sm-10 col-md-offset-3 col-md-8">
+							<div class="form-group">
+								<label for="quantidade" class="col-sm-2 col-md-2 control-label">Quantidade</label>
+								<div class="col-sm-10 col-md-6">
+									<input type="number" class="form-control" id="quantidade" name="quantidade" value="<?php echo $produto->estoque; ?>" placeholder="5" required/>
 								</div>
 							</div>
 						</div>

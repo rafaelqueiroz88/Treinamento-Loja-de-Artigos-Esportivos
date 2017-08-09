@@ -4,16 +4,19 @@
 		private $conn;
 		private $tbl_produtos = "trn_produtos";
 		private $tbl_categorias = "trn_categorias";
-		private $tbl_marcas = "trn_marcas";		
+		private $tbl_marcas = "trn_marcas";
+		private $tbl_estoque = "trn_estoque";
 
 		public $produtoId;
 		public $nome;
-		public $categoria;
-		public $marca;
 		public $preco;
 		public $custo;
 		public $foto;
 		public $tmp_name;
+
+		public $categoria;
+		public $marca;
+		public $estoque;
 
 		//Método Construtor
         public function __construct($db)
@@ -38,6 +41,7 @@
         }
         public function CadastrarProduto()
         {
+        	$id = null;
         	if ( isset( $_FILES['foto']['name'] ) && $_FILES['foto']['error'] == 0 ) 
             {
                 $arquivo_tmp = $_FILES['foto']['tmp_name'];
@@ -66,7 +70,23 @@
                         $stmt->bindParam(':foto', $novoNome);
                         if($stmt->execute())
                         {
-                            return true;
+                        	$query = "SELECT * FROM ".$this->tbl_produtos." ORDER BY prd_id DESC LIMIT 1";
+                        	$stmt = $this->conn->prepare($query);
+                        	$stmt->execute();
+				            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+				            $id = $row["prd_id"];
+                        	$query = "INSERT INTO ".$this->tbl_estoque." (est_prd_id, est_quantidade) VALUES ($id, ?)";
+                        	$stmt = $this->conn->prepare($query);
+                        	$this->estoque=htmlspecialchars(strip_tags($this->estoque));
+	                        $stmt->bindParam(1, $this->estoque);
+	                        if($stmt->execute())
+	                        {
+	                        	return true;
+	                        }
+	                        else
+	                        {
+	                        	return false;
+	                        }
                         }
                         else
                         {
@@ -114,7 +134,20 @@
             $stmt->bindParam(':id', $this->produtoId);
             if($stmt->execute())
             {
-            	return true;
+            	$query = "UPDATE ".$this->tbl_estoque." SET est_quantidade = :quantidade WHERE est_prd_id = :id ";
+            	$stmt = $this->conn->prepare($query);
+            	$this->estoque=htmlspecialchars(strip_tags($this->estoque));
+            	$this->produtoId=htmlspecialchars(strip_tags($this->produtoId));
+            	$stmt->bindParam(':quantidade', $this->estoque);
+            	$stmt->bindParam(':id', $this->produtoId);
+            	if($stmt->execute())
+            	{
+            		return true;
+            	}
+            	else
+            	{
+            		return false;
+            	}
             }
             else
             {
@@ -123,7 +156,7 @@
         }
         public function AbrirProduto()
         {
-        	$query = "SELECT * FROM ".$this->tbl_produtos." WHERE prd_id = ?";
+        	$query = "SELECT * FROM ".$this->tbl_produtos." INNER JOIN ".$this->tbl_estoque." WHERE ".$this->tbl_produtos.".prd_id = ".$this->tbl_estoque.".est_prd_id AND prd_id = ?";
         	$stmt = $this->conn->prepare($query);
         	$this->produtoId=htmlspecialchars(strip_tags($this->produtoId));
             $stmt->bindParam(1, $this->produtoId);
@@ -135,7 +168,16 @@
             $this->marca = $row["prd_marca"];
             $this->preco = $row["prd_preco"];
             $this->custo = $row["prd_custo"];
+            $this->estoque = $row["est_quantidade"];
             $this->foto = $row["prd_foto"];
+        }
+        public function ImprimirTotal()
+        {
+        	$query = "SELECT * FROM ".$this->tbl_produtos." WHERE prd_status = 0";
+        	$stmt = $this->conn->prepare($query);
+        	$stmt->execute();
+        	$num = $stmt->rowCount();
+        	echo "Número de produtos encontrados: $num";
         }
 		public function ListarTudo($from, $limite)
 		{
@@ -144,7 +186,7 @@
 			$stmt->execute();
 			$num = $stmt->rowCount();
 			$total = $num;
-			$query = "SELECT * FROM ".$this->tbl_produtos." INNER JOIN ".$this->tbl_marcas." WHERE ".$this->tbl_produtos.".prd_marca = ".$this->tbl_marcas.".mar_id LIMIT $from, $limite";
+			$query = "SELECT * FROM ".$this->tbl_produtos." INNER JOIN ".$this->tbl_marcas.", ".$this->tbl_estoque." WHERE ".$this->tbl_produtos.".prd_marca = ".$this->tbl_marcas.".mar_id AND ".$this->tbl_produtos.".prd_id = ".$this->tbl_estoque.".est_prd_id AND ".$this->tbl_produtos.".prd_status = 0 LIMIT $from, $limite";
 			$stmt = $this->conn->prepare($query);
 			$stmt->execute();
 			$num = $stmt->rowCount();
@@ -155,27 +197,31 @@
 			if($num>0)
 			{
 				echo "<tr>";
-				echo "<th>ID</th>";
+				//echo "<th>ID</th>";
 				echo "<th>Produto</th>";
 				echo "<th>Marca</th>";
-				echo "<th>Status</th>";
+				//echo "<th>Status</th>";
 				echo "<th>Custo</th>";
 				echo "<th>Preço</th>";
+				echo "<th style='text-align: center;'>Estoque</th>";
 				echo "<th>Ações</th>";
 				echo "</tr>";
 				while($row = $stmt->fetch(PDO::FETCH_ASSOC))
 				{
 					extract($row);
 					echo "<tr>";
+					/*
 					echo "<td style='vertical-align: middle;'>";
 					echo $row["prd_id"];
 					echo "</td>";
+					*/
 					echo "<td style='vertical-align: middle;'>";
 					echo $row["prd_nome"];
 					echo "</td>";
 					echo "<td style='vertical-align: middle;'>";
 					echo $row["mar_nome"];
 					echo "</td>";
+					/*
 					echo "<td style='vertical-align: middle;'>";
 						if($row["prd_status"]==0){
 							echo "Produto Ativado";
@@ -185,11 +231,15 @@
 							echo "Produto Desativado";
 						}
 					echo "</td>";
+					*/
 					echo "<td style='vertical-align: middle;'>";
 					echo "R$ ".$row["prd_custo"].",00";
 					echo "</td>";
 					echo "<td style='vertical-align: middle;'>";
 					echo "R$ ".$row["prd_preco"].",00";
+					echo "</td>";
+					echo "<td style='vertical-align: middle; text-align: center;'>";
+					echo $row["est_quantidade"];
 					echo "</td>";
 					echo "<td>";
 					echo "<a href='./?pagina=Admin&admin=Atualizar-Produto&produto=".$row["prd_id"]."' class='btn btn-primary'> <span class='glyphicon glyphicon-pencil'></span> Atualizar</a> ";
@@ -346,6 +396,10 @@
 		public function AvisoSucessoAtualizacao()
 		{
 			echo "<div class='alert alert-success' role='alert'><center>Produto Cadastrado com Sucesso! <br/> <strong><a href='./?pagina=Admin&admin=Index'>Retornar a página principal </a></strong></center></div>";
+		}
+		public function AvisoErroCadastro()
+		{
+			echo "<div class='alert alert-danger' role='alert'><center>Falha ao cadastrar o produto desejado! <br/> <strong><a href='./?pagina=Admin&admin=Index'>Retornar a página principal </a></strong></center></div>";
 		}
 		public function AvisoErroAtualizacao()
 		{

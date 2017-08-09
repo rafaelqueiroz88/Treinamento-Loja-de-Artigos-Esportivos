@@ -1,5 +1,33 @@
 $(document).ready(function(){
-	
+    $("#quantidade").change(function(){
+        var quantidade = $("#quantidade").val();
+        if(quantidade <= 0)
+        {
+            alert("O estoque precisa ter no mínimo 1 produto");
+            $(function(){
+                $("#quantidade").focus();
+            });
+        }
+        else
+        {
+            console.log("Quantidade verificada com sucesso!");
+        }
+    });
+    $("#custo").change(function(){
+        var custo = $("#custo").val();
+        var preco = $("#preco").val();
+        if(custo >= preco)
+        {
+            alert("O Valor de custo precisa ser MENOR do que o PREÇO");
+            $(function(){
+                $("#custo").focus();
+            });
+        }
+        else
+        {
+            console.log("Custo verificado com sucesso!");
+        }
+    });
 });
 /* Bootbox */
 $("#myModal").on("show", function(){

@@ -31,10 +31,10 @@
 							<h2 align="center">painel administrativo</h2>
 						</div>
 					</div>
-					<div class="col-sm-12 col-md-12">
+					<div class="col-sm-12 col-md-offset-1 col-md-10">
 						<h3 align="center">lista produtos</h3>
 					</div>
-					<div class="col-sm-12 col-md-12">
+					<div class="col-sm-12 col-md-offset-1 col-md-10">
 						<div class="left-button-margin">
 							<a href="./?pagina=Admin&admin=Cadastrar-Produto" class="btn btn-default pull-left">
 								<span class="glyphicon glyphicon-plus"></span>
@@ -52,6 +52,13 @@
 			</div>
 			<hr/>
 			<div class="container">
+				<div class="row">
+					<div class="col-sm-12 col-md-offset-1 col-md-10">
+						<?php 
+							$produtos->ImprimirTotal();
+						?>
+					</div>
+				</div>
 				<div class="row">
 					<div class="col-sm-12 col-md-offset-4 col-md-4">						
 						<form method="post" action="./?pagina=Admin">
