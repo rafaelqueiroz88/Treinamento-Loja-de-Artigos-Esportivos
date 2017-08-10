@@ -1,18 +1,10 @@
 <?php
-	class Produto
+	include_once "Produtos.php";
+	class Tenis extends Produto
 	{
-		private $conn;
-		private $tbl_produtos = "trn_produtos";
 		private $tbl_categorias = "trn_categorias";
 		private $tbl_marcas = "trn_marcas";
 		private $tbl_estoque = "trn_estoque";
-
-		public $produtoId;
-		public $nome;
-		public $preco;
-		public $custo;
-		public $foto;
-		public $tmp_name;
 
 		public $categoria;
 		public $marca;
@@ -395,7 +387,7 @@
 		}
 		public function AvisoSucessoAtualizacao()
 		{
-			echo "<div class='alert alert-success' role='alert'><center>Produto Cadastrado com Sucesso! <br/> <strong><a href='./?pagina=Admin&admin=Index'>Retornar a página principal </a></strong></center></div>";
+			echo "<div class='alert alert-success' role='alert'><center>Produto Atualizado com Sucesso! <br/> <strong><a href='./?pagina=Admin&admin=Index'>Retornar a página principal </a></strong></center></div>";
 		}
 		public function AvisoErroCadastro()
 		{
@@ -410,7 +402,6 @@
 			echo date('Y');
 		}
 	}
-
 	class Categoria
 	{
 		private $conn;
@@ -424,6 +415,7 @@
 		public $marca;
 		public $preco;
 		public $custo;
+		public $status;
 		public $foto;
 		public $tmp_name;
 
@@ -446,6 +438,44 @@
             else
             {
             	return false;
+            }
+        }
+        public function AtualizarCategoria()
+        {
+        	$query = "UPDATE ".$this->tbl_categorias." SET cat_nome = ?, cat_status = 0 WHERE cat_id = ?";
+            $stmt = $this->conn->prepare($query);
+            $this->nome=htmlspecialchars(strip_tags($this->nome));
+            $this->categoriaId=htmlspecialchars(strip_tags($this->categoriaId));
+            //bind values
+            $stmt->bindParam(1, $this->nome);
+            $stmt->bindParam(2, $this->categoriaId);
+            if($stmt->execute())
+            {
+            	return true;
+            }
+            else
+            {
+            	return false;
+            }
+        }
+        public function AbrirCategoria()
+        {
+        	$query = "SELECT * FROM ".$this->tbl_categorias." WHERE cat_id = ?";
+        	$stmt = $this->conn->prepare($query);
+        	$this->categoriaId=htmlspecialchars(strip_tags($this->categoriaId));
+            $stmt->bindParam(1, $this->categoriaId);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $this->categoriaId = $row["cat_id"];
+            $this->nome = $row["cat_nome"];
+            switch($row["cat_status"])
+            {
+            	case "0" :
+            		$this->status = "Categoria Ativada";
+            		break;
+        		case "1" :
+        			$this->status = "Categoria Desativada";
+        			break;
             }
         }
         public function ListarTodas()
@@ -482,7 +512,7 @@
 					}
 					echo "</td>";
 					echo "<td>";
-					echo "<a href='#' class='btn btn-primary' id='funcao' action='atualizar-categoria'> <span class='glyphicon glyphicon-pencil'></span> Atualizar</a> ";
+					echo "<a href='./?pagina=Admin&admin=Atualizar-Categoria&categoria=".$row["cat_id"]."' class='btn btn-primary' id='funcao' action='atualizar-categoria'> <span class='glyphicon glyphicon-pencil'></span> Atualizar</a> ";
 					echo "<a href='#' id='funcao' action='apagar-categoria' data-name='".$row["cat_nome"]."' delete-id='".$row["cat_id"]."' class='btn btn-danger' > <span class='glyphicon glyphicon-trash'></span> Apagar</a>";
 					echo "</td>";
 				}
@@ -513,8 +543,15 @@
 		{
 			echo "<div class='alert alert-danger' role='alert'><center>Falha ao cadastrar a categoria desejada! <br/> <strong><a href='./?pagina=Admin&admin=Index'>Retornar a página principal </a></strong></center></div>";
 		}
+		public function AvisoSucessoAtualizar()
+		{
+			echo "<div class='alert alert-success' role='alert'><center>Categoria Atualizada com Sucesso! <br/> <strong><a href='./?pagina=Admin&admin=Index'>Retornar a página principal </a></strong></center></div>";
+		}
+		public function AvisoErroAtualizar()
+		{
+			echo "<div class='alert alert-danger' role='alert'><center>Falha ao atualizar a Categoria desejada! <br/> <strong><a href='./?pagina=Admin&admin=Index'>Retornar a página principal </a></strong></center></div>";
+		}
 	}
-
 	class Marca
 	{
 		private $conn;
@@ -658,7 +695,7 @@
 		}
 		public function AvisoSucessoAtualizar()
 		{
-			echo "<div class='alert alert-success' role='alert'><center>Marca Cadastrada com Sucesso! <br/> <strong><a href='./?pagina=Admin&admin=Index'>Retornar a página principal </a></strong></center></div>";
+			echo "<div class='alert alert-success' role='alert'><center>Marca Atualizada com Sucesso! <br/> <strong><a href='./?pagina=Admin&admin=Index'>Retornar a página principal </a></strong></center></div>";
 		}
 		public function AvisoErroAtualizar()
 		{

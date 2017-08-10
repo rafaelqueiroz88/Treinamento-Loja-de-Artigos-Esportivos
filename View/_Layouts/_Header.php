@@ -18,21 +18,21 @@
 	</head>
 	<body>
 		<nav>
-			<div class="nav-wrapper blue">
-				<a href="#!" class="brand-logo">Logo</a>
-				<a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
-				<ul class="right hide-on-med-and-down">
-					<li><a href="sass.html">Sass</a></li>
-					<li><a href="badges.html">Components</a></li>
-					<li><a href="collapsible.html">Javascript</a></li>
-					<li><a href="mobile.html">Mobile</a></li>
-				</ul>
-				<ul class="side-nav" id="mobile-demo">
-					<li><a href="sass.html">Sass</a></li>
-					<li><a href="badges.html">Components</a></li>
-					<li><a href="collapsible.html">Javascript</a></li>
-					<li><a href="mobile.html">Mobile</a></li>
-				</ul>
-			</div>
+			<div class="nav-wrapper black">
+				<div class="container">
+					<a href="./" class="brand-logo"><?php $cliente->ExibirLogotipo(); ?></a>
+					<a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+					<ul class="right hide-on-med-and-down">
+						<li><a href="./?pagina=Cadastro"><i class="material-icons right">account_circle</i> Cadastro</a></li>
+						<li><a href="./pagina=Contato"><i class="material-icons right">phone</i> Contato</a></li>
+						<li><a href="./?pagina=Sobre"><i class="material-icons right">tag_faces</i> Sobre Nós</a></li>
+					</ul>
+					<ul class="side-nav" id="mobile-demo">
+						<li><a href="./?pagina=Cadastro"><i class="material-icons left">account_circle</i> Cadastro</a></li>
+						<li><a href="./pagina=Contato"><i class="material-icons left">phone</i> Contato</a></li>
+						<li><a href="./?pagina=Sobre"><i class="material-icons left">tag_faces</i> Sobre Nós</a></li>
+					</ul>
+				</div>
+			</div>				
 		</nav>
 		<main>

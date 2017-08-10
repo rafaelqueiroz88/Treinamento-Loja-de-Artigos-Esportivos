@@ -8,9 +8,7 @@
 					<div class="col-sm-10 col-md-2">
 						<time>
 							<?php
-								$database = new Database();
-								$db = $database->getConnection();
-								$loja = new HomeModel($db);
+								$loja = new Home();
 								$loja->VerData();
 							?>
 						</time>

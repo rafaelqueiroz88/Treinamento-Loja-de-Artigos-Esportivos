@@ -1,24 +1,24 @@
 <?php
 	$database = new Database();
 	$db = $database->getConnection();	
-	$produto = new Produto($db);
+	$tenis = new Tenis($db);
 	if($_POST)
 	{
-		$produto->nome = $_POST["nome"];
-		$produto->categoria = $_POST["categoria"];
-		$produto->marca = $_POST["marca"];
-		$produto->preco = $_POST["preco"];
-		$produto->custo = $_POST["custo"];
-		$produto->estoque = $_POST["quantidade"];
-		$produto->foto = $_FILES["foto"]["name"];
-		$produto->tmp_name = $_FILES["foto"]["tmp_name"];
-		if($produto->CadastrarProduto())
+		$tenis->nome = $_POST["nome"];
+		$tenis->categoria = $_POST["categoria"];
+		$tenis->marca = $_POST["marca"];
+		$tenis->preco = $_POST["preco"];
+		$tenis->custo = $_POST["custo"];
+		$tenis->estoque = $_POST["quantidade"];
+		$tenis->foto = $_FILES["foto"]["name"];
+		$tenis->tmp_name = $_FILES["foto"]["tmp_name"];
+		if($tenis->CadastrarProduto())
 		{
-			$produto->AvisoSucessoCadastro();
+			$tenis->AvisoSucessoCadastro();
 		}
 		else
 		{
-			$produto->AvisoErroCadastro();
+			$tenis->AvisoErroCadastro();
 		}
 	}
 ?>
@@ -52,7 +52,7 @@
 								<div class="col-sm-10 col-md-6">
 									<select class="form-control" name="categoria" required>
 										<?php
-											$produto->ListarCategoriasSelect();
+											$tenis->ListarCategoriasSelect();
 										?>
 									</select>
 								</div>								
@@ -66,7 +66,7 @@
 								<div class="col-sm-10 col-md-6">
 									<select class="form-control" name="marca" required>
 										<?php										
-											$produto->ListarMarcasSelect();
+											$tenis->ListarMarcasSelect();
 										?>
 									</select>
 								</div>								
@@ -132,10 +132,10 @@
 							</button>
 						</div>
 						<div class="left-button-margin">
-							<button class="btn btn-warning pull-left" onclick="window.location='./?pagina=Admin&admin=Index'">
+							<a class="btn btn-warning pull-left" href="./?pagina=Admin&admin=Index">
 								<span class="glyphicon glyphicon-remove"></span>
 								Cancelar
-							</button>
+							</a>
 						</div>
 					</div>
 				</form>

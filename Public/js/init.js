@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    $(".button-collapse").sideNav();
     $("#quantidade").change(function(){
         var quantidade = $("#quantidade").val();
         if(quantidade <= 0)

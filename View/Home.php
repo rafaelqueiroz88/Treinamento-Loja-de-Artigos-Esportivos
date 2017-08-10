@@ -1,6 +1,10 @@
 <?php
 	$database = new Database();
 	$db = $database->getConnection();
-	$produtos = new HomeModel($db);
-	$produtos->ListarTudo();
+	$calcados = new Calcados($db);
 ?>
+		<div class="container">
+			<?php
+				$calcados->ListarTudo();
+			?>
+		</div>

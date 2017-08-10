@@ -10,4 +10,9 @@
 			$this->titulo = "Loja";
 			echo $this->titulo;
 		}
+		public function ExibirLogotipo()
+		{
+			$this->logotipo = "Loja";
+			echo $this->logotipo;
+		}
 	}

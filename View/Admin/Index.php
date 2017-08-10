@@ -1,15 +1,15 @@
 <?php
 	$database = new Database();
 	$db = $database->getConnection();
-	$produtos = new Produto($db);
+	$tenis = new Tenis($db);
 	$categorias = new Categoria($db);
 	$marcas = new Marca($db);	
 	if($_POST)
 	{
 		if(isset($_POST["produto_id"]))
 		{
-			$produtos->produtoId = $_POST["produto_id"];
-			$produtos->DesativarProduto();	
+			$tenis->produtoId = $_POST["produto_id"];
+			$tenis->DesativarProduto();	
 		}
 		else if(isset($_POST["categoria_id"]))
 		{
@@ -55,7 +55,7 @@
 				<div class="row">
 					<div class="col-sm-12 col-md-offset-1 col-md-10">
 						<?php 
-							$produtos->ImprimirTotal();
+							$tenis->ImprimirTotal();
 						?>
 					</div>
 				</div>
@@ -79,7 +79,7 @@
 				<?php
 					$from = isset($_GET["from"]) ? $_GET["from"] : 0;
 					$limite = isset($_POST["limite"]) ? $_POST["limite"] : 4;
-					$produtos->ListarTudo($from, $limite);
+					$tenis->ListarTudo($from, $limite);
 				?>
 				</form>
 			</div>
