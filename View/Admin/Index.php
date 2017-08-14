@@ -77,9 +77,18 @@
 					</div>
 				</div>
 				<?php
-					$from = isset($_GET["from"]) ? $_GET["from"] : 0;
-					$limite = isset($_POST["limite"]) ? $_POST["limite"] : 4;
-					$tenis->ListarTudo($from, $limite);
+					if($_POST)
+					{
+						$busca = $_POST["busca"];
+						$tenis->ListarBusca($busca);
+					}
+					else
+					{
+						$from = isset($_GET["from"]) ? $_GET["from"] : 0;
+						$limite = isset($_POST["limite"]) ? $_POST["limite"] : 4;
+						$tenis->ListarTudo($from, $limite);
+					}
+					
 				?>
 				</form>
 			</div>

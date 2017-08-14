@@ -1,34 +1,5 @@
 $(document).ready(function(){
-    $(".button-collapse").sideNav();
-    $("#quantidade").change(function(){
-        var quantidade = $("#quantidade").val();
-        if(quantidade <= 0)
-        {
-            alert("O estoque precisa ter no mínimo 1 produto");
-            $(function(){
-                $("#quantidade").focus();
-            });
-        }
-        else
-        {
-            console.log("Quantidade verificada com sucesso!");
-        }
-    });
-    $("#custo").change(function(){
-        var custo = $("#custo").val();
-        var preco = $("#preco").val();
-        if(custo >= preco)
-        {
-            alert("O Valor de custo precisa ser MENOR do que o PREÇO");
-            $(function(){
-                $("#custo").focus();
-            });
-        }
-        else
-        {
-            console.log("Custo verificado com sucesso!");
-        }
-    });
+    $(".button-collapse").sideNav();    
 });
 /* Bootbox */
 $("#myModal").on("show", function(){
@@ -51,7 +22,8 @@ $("#myModal").modal({
 /* Fim do Bootbox */
 
 /* Bootbox confirmar desativação de objeto */
-$(document).on('click', '#funcao', function(){
+$(document).on('click', '#funcao', function(event){
+    event.preventDefault();
     var funcao = $(this).attr('action');
     var id = $(this).attr('delete-id');
     var objeto = $(this).attr('data-name');
@@ -135,5 +107,66 @@ $(document).on('click', '#funcao', function(){
         });
         return false;
     }
+    else if(funcao=="ver_info_extra_categoria")
+    {
+        var total = $(this).attr("collection");
+        bootbox.alert({ 
+            size: "small",
+            title: "<h4> <span class='glyphicon glyphicon-alert'></span> AVISO </h4>",
+            message: total+" produtos estão relacionados a esta categoria!", 
+            callback: function(){  }
+        });
+    }
+    else if(funcao=="ver_info_extra_marca")
+    {
+        var total = $(this).attr("collection");
+        bootbox.alert({ 
+            size: "small",
+            title: "<h4> <span class='glyphicon glyphicon-alert'></span> AVISO </h4>",
+            message: total+" produtos estão relacionados a esta marca!", 
+            callback: function(){  }
+        });
+    }
 });
 /* Fim da confirmação de desativação */
+$("#custo").change(function(){
+        
+    var preco = $("#preco").val();
+    var custo = $("#custo").val();
+
+    if(custo >= preco)
+    {
+        bootbox.alert({ 
+            size: "small",
+            title: "<h4> <span class='glyphicon glyphicon-alert'></span> AVISO </h4>",
+            message: "O valor de custo não pode ser maior valor final do produto!", 
+            callback: function(){  }
+        });
+        $(function(){
+            $("#custo").val(0);
+            $("#custo").focus();
+        });
+    }
+    else if (custo > 0)
+    {
+        console.log("Custo verificado com sucesso!");
+    }
+});
+$("#quantidade").change(function(){
+    var quantidade = $("#quantidade").val();
+    if(quantidade <= 0)
+    {
+        alert("O estoque precisa ter no mínimo 1 produto");
+        $(function(){
+            $("#quantidade").focus();
+        });
+        $("#quantidade").val(1);
+    }
+    else
+    {
+        console.log("Quantidade verificada com sucesso!");
+    }
+});
+$(document).on("click", "#ir-topo", function(e){
+    $("html, body").animate({ scrollTop: 0 }, "slow");
+});

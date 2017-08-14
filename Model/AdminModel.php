@@ -196,7 +196,7 @@
 				echo "<th>Custo</th>";
 				echo "<th>Preço</th>";
 				echo "<th style='text-align: center;'>Estoque</th>";
-				echo "<th>Ações</th>";
+				echo "<th style='text-align: center;'>Ações</th>";
 				echo "</tr>";
 				while($row = $stmt->fetch(PDO::FETCH_ASSOC))
 				{
@@ -233,7 +233,7 @@
 					echo "<td style='vertical-align: middle; text-align: center;'>";
 					echo $row["est_quantidade"];
 					echo "</td>";
-					echo "<td>";
+					echo "<td align='center'>";
 					echo "<a href='./?pagina=Admin&admin=Atualizar-Produto&produto=".$row["prd_id"]."' class='btn btn-primary'> <span class='glyphicon glyphicon-pencil'></span> Atualizar</a> ";
 					//echo "<a href='#' class='btn btn-info'> <span class='glyphicon glyphicon-eye-open'></span> Abrir </a> ";
 					echo "<a href='#' id='funcao' data-name='".$row["prd_nome"]."' action='apagar-produto' delete-id='".$row["prd_id"]."' class='btn btn-danger' > <span class='glyphicon glyphicon-trash'></span> Apagar</a>";
@@ -259,9 +259,7 @@
 			
 
 			if(!isset($_GET["from"]) || $_GET["from"] == 0 || $_GET["from"] == 1)
-			{
-
-				
+			{				
 				//O seguinte código consegue fazer paginação e anular o link ativo, porém só funciona quando o $from é igual a 0
 				//encontrar uma lógica que funcione para o caso do $from estar em outra casa
 				for($i = 1; $i <= $limitar; $i++)
@@ -289,9 +287,6 @@
 					echo "<li><a href='?pagina=Admin&from=$j'>$i</a></li>";
 				}
 			}
-			
-			
-
 			/*echo "<li>";
 			echo "<a href='#'' aria-label='Next'>";
 			echo "<span aria-hidden='true'>&raquo;</span>";
@@ -301,6 +296,79 @@
 			echo "</nav>";
 			echo "</center>";
 			echo "</div>";
+			echo "</div>";
+			echo "</div>";
+		}
+		public function ListarBusca($busca)
+		{
+			$query = "SELECT * FROM ".$this->tbl_produtos." INNER JOIN ".$this->tbl_marcas.", ".$this->tbl_estoque." WHERE ".$this->tbl_produtos.".prd_marca = ".$this->tbl_marcas.".mar_id AND ".$this->tbl_produtos.".prd_id = ".$this->tbl_estoque.".est_prd_id AND ".$this->tbl_produtos.".prd_status = 0 AND ".$this->tbl_produtos.".prd_nome LIKE '$busca' LIMIT 4";
+			$stmt = $this->conn->prepare($query);
+			$stmt->execute();
+			$num = $stmt->rowCount();
+			echo "<div class='row'>";
+			echo "<div class='col-sm-10 col-md-offset-1 col-md-10'>";
+			echo "<a href='./?pagina=Admin&admin=Index' class='btn btn-default'>Remover '$busca' da Busca</a> <br/><br/>";
+			echo "</div>";
+			echo "</div>";
+			echo "<div class='row'>";
+			echo "<div class='col-sm-10 col-md-offset-1 col-md-10'>";
+			echo "<div class='table-responsive'>";
+			echo "<table class='table table-condensed table-hover'>";
+			if($num>0)
+			{
+				echo "<tr>";
+				//echo "<th>ID</th>";
+				echo "<th>Produto</th>";
+				echo "<th>Marca</th>";
+				//echo "<th>Status</th>";
+				echo "<th>Custo</th>";
+				echo "<th>Preço</th>";
+				echo "<th style='text-align: center;'>Estoque</th>";
+				echo "<th style='text-align: center;'>Ações</th>";
+				echo "</tr>";
+				while($row = $stmt->fetch(PDO::FETCH_ASSOC))
+				{
+					extract($row);
+					echo "<tr>";
+					/*
+					echo "<td style='vertical-align: middle;'>";
+					echo $row["prd_id"];
+					echo "</td>";
+					*/
+					echo "<td style='vertical-align: middle;'>";
+					echo $row["prd_nome"];
+					echo "</td>";
+					echo "<td style='vertical-align: middle;'>";
+					echo $row["mar_nome"];
+					echo "</td>";
+					/*
+					echo "<td style='vertical-align: middle;'>";
+						if($row["prd_status"]==0){
+							echo "Produto Ativado";
+						}
+						else
+						{
+							echo "Produto Desativado";
+						}
+					echo "</td>";
+					*/
+					echo "<td style='vertical-align: middle;'>";
+					echo "R$ ".$row["prd_custo"].",00";
+					echo "</td>";
+					echo "<td style='vertical-align: middle;'>";
+					echo "R$ ".$row["prd_preco"].",00";
+					echo "</td>";
+					echo "<td style='vertical-align: middle; text-align: center;'>";
+					echo $row["est_quantidade"];
+					echo "</td>";
+					echo "<td align='center'>";
+					echo "<a href='./?pagina=Admin&admin=Atualizar-Produto&produto=".$row["prd_id"]."' class='btn btn-primary'> <span class='glyphicon glyphicon-pencil'></span> Atualizar</a> ";
+					//echo "<a href='#' class='btn btn-info'> <span class='glyphicon glyphicon-eye-open'></span> Abrir </a> ";
+					echo "<a href='#' id='funcao' data-name='".$row["prd_nome"]."' action='apagar-produto' delete-id='".$row["prd_id"]."' class='btn btn-danger' > <span class='glyphicon glyphicon-trash'></span> Apagar</a>";
+					echo "</td>";
+				}
+			}
+			echo "</table>";
 			echo "</div>";
 			echo "</div>";
 		}
@@ -426,7 +494,7 @@
         }
         public function CadastrarCategoria()
         {
-        	$query = "INSERT INTO ".$this->tbl_categorias." (cat_nome) VALUES (?)";
+        	$query = "INSERT INTO ".$this->tbl_categorias." (cat_nome, cat_status) VALUES (?, 0)";
             $stmt = $this->conn->prepare($query);
             $this->categoria=htmlspecialchars(strip_tags($this->categoria));
             //bind values
@@ -480,27 +548,33 @@
         }
         public function ListarTodas()
 		{
-			$query = "SELECT * FROM ".$this->tbl_categorias." ORDER BY cat_status ASC";
+			$query = "SELECT * FROM ".$this->tbl_categorias." WHERE cat_status = 0 ORDER BY cat_status ASC";
 			$stmt = $this->conn->prepare($query);
 			$stmt->execute();
 			$num = $stmt->rowCount();
 			echo "<div class='table-responsive'>";
 			echo "<table class='table table-condensed table-hover'>";
 			if($num>0)
-			{
-				
+			{				
 				echo "<tr>";
 				echo "<th>Categoria</th>";
-				echo "<th>Status</th>";
-				echo "<th>Ações</th>";
+				//echo "<th>Status</th>";
+				echo "<th style='text-align: center;'>Ações</th>";
 				echo "</tr>";
 				while($row = $stmt->fetch(PDO::FETCH_ASSOC))
 				{
+					$id = $row["cat_id"];
+					//Teste de produtos relacionados
+					$q = "SELECT * FROM ".$this->tbl_categorias." INNER JOIN ".$this->tbl_produtos." WHERE ".$this->tbl_categorias.".cat_id = ".$this->tbl_produtos.".prd_categoria AND ".$this->tbl_categorias.".cat_id = $id";
+					$statement = $this->conn->prepare($q);
+					$statement->execute();
+					$contagem = $statement->rowCount();
 					extract($row);
 					echo "<tr>";
 					echo "<td style='vertical-align: middle;'>";
 					echo $row["cat_nome"];
 					echo "</td>";
+					/*
 					echo "<td style='vertical-align: middle;'>";
 					if($row["cat_status"]==0)
 					{
@@ -511,8 +585,10 @@
 						echo "Categoria Desativada";
 					}
 					echo "</td>";
-					echo "<td>";
-					echo "<a href='./?pagina=Admin&admin=Atualizar-Categoria&categoria=".$row["cat_id"]."' class='btn btn-primary' id='funcao' action='atualizar-categoria'> <span class='glyphicon glyphicon-pencil'></span> Atualizar</a> ";
+					*/
+					echo "<td align='center'>";
+					echo "<a href='./?pagina=Admin&admin=Atualizar-Categoria&categoria=".$row["cat_id"]."' class='btn btn-primary'> <span class='glyphicon glyphicon-pencil'></span> Atualizar</a> ";
+					echo " <a href='#' class='btn btn-info' id='funcao' collection='$contagem' action='ver_info_extra_categoria'> <span class='glyphicon glyphicon-eye-open'></span> Detalhes </a> ";
 					echo "<a href='#' id='funcao' action='apagar-categoria' data-name='".$row["cat_nome"]."' delete-id='".$row["cat_id"]."' class='btn btn-danger' > <span class='glyphicon glyphicon-trash'></span> Apagar</a>";
 					echo "</td>";
 				}
@@ -576,7 +652,7 @@
         }
         public function CadastrarMarca()
         {
-        	$query = "INSERT INTO ".$this->tbl_marcas." (mar_nome, mar_data_entrada) VALUES (?, now())";
+        	$query = "INSERT INTO ".$this->tbl_marcas." (mar_nome, mar_data_entrada, mar_status) VALUES (?, now(), 0)";
             $stmt = $this->conn->prepare($query);
             $this->marca=htmlspecialchars(strip_tags($this->marca));
             //bind values
@@ -630,7 +706,7 @@
         }
         public function ListarTodas()
 		{
-			$query = "SELECT * FROM ".$this->tbl_marcas." ORDER BY mar_status ASC";
+			$query = "SELECT * FROM ".$this->tbl_marcas." WHERE mar_status = 0 ORDER BY mar_status ASC";
 			$stmt = $this->conn->prepare($query);
 			$stmt->execute();
 			$num = $stmt->rowCount();
@@ -641,17 +717,24 @@
 				
 				echo "<tr>";
 				echo "<th>Marcas</th>";
-				echo "<th>Status</th>";
-				echo "<th>Ações</th>";
+				//echo "<th>Status</th>";
+				echo "<th style='text-align: center;'>Ações</th>";
 				echo "</tr>";
 				while($row = $stmt->fetch(PDO::FETCH_ASSOC))
 				{
+					$id = $row["mar_id"];
+					//Teste de produtos relacionados
+					$q = "SELECT * FROM ".$this->tbl_marcas." INNER JOIN ".$this->tbl_produtos." WHERE ".$this->tbl_marcas.".mar_id = ".$this->tbl_produtos.".prd_marca AND ".$this->tbl_marcas.".mar_id = $id";
+					$statement = $this->conn->prepare($q);
+					$statement->execute();
+					$contagem = $statement->rowCount();
 					extract($row);
 					echo "<tr>";
 					echo "<td style='vertical-align: middle;'>";
 					echo $row["mar_nome"];
 					echo "</td>";
-					echo "<td style='vertical-align: middle;'>";
+					/*
+					echo "<td style='vertical-align: middle;'>";					
 					if($row["mar_status"]==0)
 					{
 						echo "Marca Ativada";
@@ -659,10 +742,12 @@
 					else
 					{
 						echo "Marca Desativada";
-					}
+					}					
 					echo "</td>";
-					echo "<td>";
+					*/
+					echo "<td align='center'>";
 					echo "<a href='./?pagina=Admin&admin=Atualizar-Marca&marca=".$row["mar_id"]."' class='btn btn-primary'> <span class='glyphicon glyphicon-pencil'></span> Atualizar</a> ";
+					echo " <a href='#' class='btn btn-info' id='funcao' collection='$contagem' action='ver_info_extra_marca'> <span class='glyphicon glyphicon-eye-open'></span> Detalhes </a> ";
 					echo "<a href='#' id='funcao' action='apagar-marca' data-name='".$row["mar_nome"]."' delete-id='".$row["mar_id"]."' class='btn btn-danger' > <span class='glyphicon glyphicon-trash'></span> Apagar</a>";
 					echo "</td>";
 				}

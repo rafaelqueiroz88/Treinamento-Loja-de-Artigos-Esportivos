@@ -22,4 +22,8 @@
 		{
 			include_once './View/Admin.php';			
 		}
+		public function Cadastrar()
+		{
+			include_once './View/Home/Usuario/Cadastrar.php';
+		}
 	}

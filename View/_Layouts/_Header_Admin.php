@@ -10,8 +10,8 @@
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	</head>
 	<body>
-		<main>
-			<nav class="navbar navbar-inverse navbar-static-top">
+		<main class="adm">
+			<nav class="navbar navbar-fixed-top navbar-inverse">
 				<div class="container-fluid">
 					<div class="navbar-header">
 						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
@@ -50,9 +50,9 @@
 								</ul>
 							</li>
 						</ul>
-						<form class="navbar-form navbar-left">
-							<div class="form-group">
-								<input type="text" class="form-control" placeholder="Procurar Produto">
+						<form class="navbar-form navbar-left" action="./?pagina=Admin&admin=Index" method="post">
+							<div class="form-group">								
+								<input type="text" id="busca" name="busca" class="form-control" placeholder="Procurar Produto">
 							</div>
 							<button type="submit" class="btn btn-default">Procurar</button>
 						</form>
@@ -72,3 +72,6 @@
 					</div>
 				</div>
 			</nav>
+			<div class="rolar-topo">
+				<a href="#" id="ir-topo"> <i class="material-icons">&#xE5D8;</i> </a>
+			</div>

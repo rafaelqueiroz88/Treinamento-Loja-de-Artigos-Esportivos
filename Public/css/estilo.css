@@ -41,3 +41,24 @@ input[type="file"]::-webkit-file-upload-button{
 	width: 220px;
 	height: 180px;
 }
+/* Botão de avanço ao topo da tela */
+.rolar-topo{
+	z-index: 99;
+	position: fixed;
+		right: 30px;
+		bottom: 30px;
+	border-radius: 50%;
+	width: 40px;
+	height: 40px;
+	padding-top: 8px;
+	padding-left: 8px;
+	background-color: rgba(255, 20, 20, 1);
+	box-shadow: 1.5px 1.5px 1.5px rgba(30, 30, 30, .6);
+}
+.rolar-topo a{
+	font-size: 18pt;
+	color: #fff;
+}
+.adm{
+	margin-top: 60px;
+}

@@ -24,15 +24,18 @@
 					<a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
 					<ul class="right hide-on-med-and-down">
 						<li><a href="./?pagina=Cadastro"><i class="material-icons right">account_circle</i> Cadastro</a></li>
-						<li><a href="./pagina=Contato"><i class="material-icons right">phone</i> Contato</a></li>
+						<li><a href="./?pagina=Contato"><i class="material-icons right">phone</i> Contato</a></li>
 						<li><a href="./?pagina=Sobre"><i class="material-icons right">tag_faces</i> Sobre Nós</a></li>
 					</ul>
 					<ul class="side-nav" id="mobile-demo">
 						<li><a href="./?pagina=Cadastro"><i class="material-icons left">account_circle</i> Cadastro</a></li>
-						<li><a href="./pagina=Contato"><i class="material-icons left">phone</i> Contato</a></li>
+						<li><a href="./?pagina=Contato"><i class="material-icons left">phone</i> Contato</a></li>
 						<li><a href="./?pagina=Sobre"><i class="material-icons left">tag_faces</i> Sobre Nós</a></li>
 					</ul>
 				</div>
 			</div>				
 		</nav>
 		<main>
+			<div class="rolar-topo">
+				<a href="#" id="ir-topo"> <i class="material-icons">&#xE5D8;</i> </a>
+			</div>

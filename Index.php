@@ -19,4 +19,8 @@
 		case 'Admin' :
 			$controller->Admin($admin);
 			break;
+		case 'Cadastro' :
+			$controller->Header();
+			$controller->Cadastrar();
+			$controller->Footer();
 	}
