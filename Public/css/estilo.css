@@ -62,3 +62,16 @@ input[type="file"]::-webkit-file-upload-button{
 .adm{
 	margin-top: 60px;
 }
+.input-field label {
+	color: #000;
+}
+.input-field input[type=text]:focus + label {
+	color: #000;
+}
+.input-field input[type=text]:focus {
+	border-bottom: 1px solid #000;
+	box-shadow: 0 1px 0 0 #000;
+}
+.input-field .prefix.active {
+	color: #000;
+}
